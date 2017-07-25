@@ -141,16 +141,16 @@ remove.entry <- function(arg.list) {
 
 
 
-render.tables <- function(sqlite_path, table){
-  
-  df <- pull.data.from.db(sqlite_path, table) %>% 
-    arrange(year, month, day)
-  
-  if(table == "orders"){
-    df <- filter(df, purchased == "False")
-  }
+render.tables <- function(purdata){
+  # browser()
+  df <- purdata %>% 
+    mutate(timestamp = ymd_hms(timestamp)) %>%
+    arrange(desc(timestamp)) %>% 
+    select(-year, -month, -day) %>% 
+    mutate(timestamp = as.character(timestamp)) 
+
   DT::renderDataTable(
-      d_orders <- df,
+    d_orders <- df,
     rownames = FALSE,
     options = list(searching = FALSE, lengthChange = FALSE)
   )
